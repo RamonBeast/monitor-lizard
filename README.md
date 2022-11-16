@@ -107,9 +107,7 @@ hardware:
 - Move into the project directory: `cd monitor-lizard`
 - Create a virtual environment: `virtualenv .venv` then activate it `. .venv/bin/activate`
 - Install dependencies: `pip install -r requirements.txt`
-- Copy `cfg/config-sample.yaml` to `cfg/config.yaml` and fill the configuration according to your preference
-
-`monitor-lizard` can be launched directly, within an active `virtualenv` with `python lizard.py cfg/config.yaml` though it is suggested to follow the steps below to properly run it as a service.
+- Copy `cfg/config-sample.yaml` to `cfg/config.yaml` and adjust the configuration according to your preference
 
 ## Running Manually
 After the installation `monitor-lizard` can be started manually, if a service is not required:
