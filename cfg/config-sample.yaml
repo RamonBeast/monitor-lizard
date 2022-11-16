@@ -1,0 +1,50 @@
+influx:
+  url: http://localhost:8086
+  org: your_org
+  buckets:
+    my_bucket: influx_access_token
+    other_bucket: influx_access_token
+
+modules:
+  bme280:
+    active: true # enable or disable this module
+    bucket: bucket_to_use
+    asset: this_asset_name
+    poll-time: 900 # poll sensor every x seconds (default: 15 minutes)
+    measurement: environment # measurement
+    location: indoor # indoor, outdoor, porch etc...
+  
+  bmp280:
+    active: true # enable or disable this module
+    bucket: bucket_to_use
+    asset: this_asset_name
+    poll-time: 900 # poll sensor every x seconds (default: 15 minutes)
+    measurement: environment # measurement
+    location: indoor # indoor, outdoor, porch etc...
+
+  outdoor:
+    active: true
+    bucket: bucket_to_use
+    lat: 41.5601 # Environmental data is pulled from this coordinates (latitude)
+    lon: 6.1602  # Longitude
+    poll-time: 900 # poll sensor every x seconds (default: 15 minutes)
+    ow-key: openweather_api_key
+    measurement: environment # measurement
+
+  geiger:
+    active: true
+    bucket: bucket_to_use
+    usvh-ratio: 0.00812037037037 # This value is for Geiger tube model J305
+    pin: 7 # board pin where the pulse out is connected
+    location: indoor
+    poll-time: 60 # poll sensor every x seconds (default: 1 minute)
+    measurement: environment # measurement
+    asset: this_asset_name
+
+  hardware:
+    active: true
+    bucket: bucket_to_use
+    poll-time: 900 # poll sensor every x seconds (default: 15 minutes)
+    measurement: hardware # measurement
+    asset: this_asset_name
+    location: asset_location

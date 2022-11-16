@@ -1,0 +1,11 @@
+[Unit]
+Description=Monitor-Lizard service
+After=multi-user.target
+
+[Service]
+Type=simple
+Restart=always
+ExecStart=/home/<username>/monitor-lizard/.venv/bin/python /home/<username>/monitor-lizard/lizard.py /home/<username>/monitor-lizard/cfg/config.yaml
+
+[Install]
+WantedBy=multi-user.target
