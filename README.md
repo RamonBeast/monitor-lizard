@@ -111,6 +111,15 @@ hardware:
 
 `monitor-lizard` can be launched directly, within an active `virtualenv` with `python lizard.py cfg/config.yaml` though it is suggested to follow the steps below to properly run it as a service.
 
+## Running Manually
+After the installation `monitor-lizard` can be started manually, if a service is not required:
+
+```
+cd /path/to/monitor-lizard/
+. .venv/bin/activate
+python lizard.py cfg/config.yaml
+```
+
 ## Daemon (systemd) configuration
 Update `utils/monitor-lizard.service` to reflect your `monitor-lizard` project's path, then run the following commands to activate a service that starts automatically at boot:
 
@@ -159,13 +168,13 @@ Adding new modules to `monitor-lizard` can be done in 3 steps:
 ## Module structure
 Each module requires a `start()` function that takes 2 parameters: 
 
-1. a `q` parameter representing a `Queue` created by `lizard.py` and used by the script to send sensor data back
+1. a `q` parameter representing a `Queue` created by `lizard.py` and used by the script to send sensor data
 1. a `cfg` parameter containing module-specific parameters from the `config.json` file
 
 A minimal `start()` function contains sensor reading and data sending functions in an infinite loop.
 
 ```
-def start(client, cfg):
+def start(q, cfg):
     while True:
         # Read sensor (this is the function you will want to populate)
         data = get_data_from_sensor()
