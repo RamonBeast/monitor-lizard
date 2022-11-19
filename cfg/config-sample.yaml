@@ -5,6 +5,9 @@ influx:
     my_bucket: influx_access_token
     other_bucket: influx_access_token
 
+config:
+  allow-writeable-modules: false # Enable only if your modules folder _must_ be world-writeable
+
 modules:
   bme280:
     active: true # enable or disable this module

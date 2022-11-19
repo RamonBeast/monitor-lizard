@@ -1,5 +1,5 @@
 import influxdb_client
-import yaml, sys
+import yaml, sys, stat, os
 from multiprocessing import Process, Queue
 from importlib import import_module
 
@@ -59,6 +59,20 @@ def main():
 
     q = Queue()
     cfg = load_conf(sys.argv[1])
+
+    # Sanity check on modules folder
+    if os.path.isdir('modules') == False:
+        print('Cannot locate \"modules\" folder, exiting')
+        return 1
+
+    m = os.lstat('modules').st_mode
+
+    if (stat.S_IWOTH & m) and cfg['config']['allow-writeable-modules'] == False:
+        print('Warning: \"modules\" folder is world-writeable, anyone could drop-in a script and execute code on this device.')
+        print('You should make the folder not world-writeable: \"chmod o-w modules\"')
+        print('If this is not possible, you can enable \"allow-writeable-modules\" in the configuration file')
+        return 1
+
     clients = get_clients(cfg['influx'])
     jobs = start_modules(q, cfg['modules'])
 
