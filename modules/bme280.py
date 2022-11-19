@@ -28,7 +28,7 @@ def start(q, cfg):
     bme280 = BME280(i2c_dev=bus)
 
     # Discard the first readings as they're usually wrong
-    _ = get_smoothed_readings(bme280, samples=1)
+    _ = get_smoothed_readings(bme280, samples=2)
 
     while True:
         # Read sensor
