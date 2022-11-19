@@ -61,11 +61,14 @@ def main():
     cfg = load_conf(sys.argv[1])
 
     # Sanity check on modules folder
-    if os.path.isdir('modules') == False:
+    modules, _ = os.path.split(os.path.abspath(sys.argv[0]))
+    modules = os.path.join(modules, "modules")
+
+    if os.path.isdir(modules) == False:
         print('Cannot locate \"modules\" folder, exiting')
         return 1
 
-    m = os.lstat('modules').st_mode
+    m = os.lstat(modules).st_mode
 
     if (stat.S_IWOTH & m) and cfg['config']['allow-writeable-modules'] == False:
         print('Warning: \"modules\" folder is world-writeable, anyone could drop-in a script and execute code on this device.')
