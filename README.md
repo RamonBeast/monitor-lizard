@@ -3,6 +3,8 @@
 
 Although this project uses a `Raspberry Pi`, this is not a requirement. Sensor data is written to an [InfluxDB](https://docs.influxdata.com/influxdb/v2.5/install/) instance where it can be visualized using [Grafana](https://grafana.com/grafana/download).
 
+![Dashboard](assets/dashboard.png?raw=true "Monitor-Lizard dashboard")
+
 # Pre-requisites
 - InfluxDB instance
 - Grafana
