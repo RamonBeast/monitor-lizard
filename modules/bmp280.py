@@ -2,7 +2,6 @@ from smbus import SMBus
 from bmp280 import BMP280
 from time import sleep
 
-# The sensor has a resolution of 1Hz
 def get_smoothed_readings(sensor, samples=3):
     # Read sensor
     t = []
@@ -14,7 +13,7 @@ def get_smoothed_readings(sensor, samples=3):
         p.append(sensor.get_pressure())
         h.append(sensor.get_humidity())
 
-        sleep(1)
+        sleep(0.5)
 
     return {
         "temperature": sum(t) / len(t),
@@ -25,9 +24,7 @@ def start(q, cfg):
     # Sensor initialization
     bus = SMBus(1)
     bmp280 = BMP280(i2c_dev=bus)
-
-    # Discard the first readings as they're usually wrong
-    _ = get_smoothed_readings(bmp280, samples=2)
+    bmp280.setup(mode="forced")
 
     while True:
         # Read sensor
