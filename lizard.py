@@ -1,5 +1,5 @@
-import influxdb_client
 import yaml, sys, stat, os, logging
+import influxdb_client
 from multiprocessing import Process, Queue
 from importlib import import_module
 
@@ -57,7 +57,10 @@ def main():
         print(f"python {sys.argv[0]} <path to config file>")
         return 1
 
-    logging.basicConfig(filename='lizard.log', format='%(asctime)s - %(filename)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    logging.basicConfig(
+        filename='/var/log/lizard.log', 
+        level=logging.INFO,
+        format='%(asctime)s - %(levelname)s - %(filename)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
 
     q = Queue()
     cfg = load_conf(sys.argv[1])
