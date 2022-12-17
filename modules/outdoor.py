@@ -1,10 +1,11 @@
 from time import sleep
-import requests
+import requests, logging
 
 def get_outdoor_data(lat, lon, api_key):
     r = requests.get(f'https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key}')
 
     if r.status_code != 200:
+        logging.error('Error requesting data from openweathermap: %s', r.status_code)
         return {}
 
     data = r.json()

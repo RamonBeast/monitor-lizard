@@ -1,5 +1,5 @@
 import influxdb_client
-import yaml, sys, stat, os
+import yaml, sys, stat, os, logging
 from multiprocessing import Process, Queue
 from importlib import import_module
 
@@ -57,6 +57,8 @@ def main():
         print(f"python {sys.argv[0]} <path to config file>")
         return 1
 
+    logging.basicConfig(filename='lizard.log', format='%(asctime)s - %(filename)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+
     q = Queue()
     cfg = load_conf(sys.argv[1])
 
@@ -78,6 +80,8 @@ def main():
 
     clients = get_clients(cfg['influx'])
     jobs = start_modules(q, cfg['modules'])
+
+    logging.info('Monitor Lizard Started')
 
     while True:
         name, bucket, record, precision = q.get()

@@ -5,3 +5,4 @@ __pycache__/
 .venv/
 pyvenv.cfg
 config.yaml
+lizard.log
