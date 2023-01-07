@@ -216,3 +216,57 @@ my_new_module:
 ```
 
 Any other parameter is module-specific and it will automatically be passed to the `start()` method after loading the configuration file.
+
+## Downsampling
+Data can be downsampled to a low frequency bucket with a simple `InfluxDB` task triggered by a `cron` event. This is a sample script that tries to address a [long-term bug](https://github.com/influxdata/influxdb/issues/23992) in `InfluxDB`:
+
+```
+import "timezone"
+import "experimental"
+
+option task = {name: "downsample_indoor_humidity", cron: "0 0 * * *", offset: 0m}
+option tz = timezone.location(name: "Europe/Amsterdam")
+
+startoffset = 2d
+tzoffset = 0h
+start = experimental.subDuration(d: startoffset, from: today())
+stop = experimental.subDuration(d: tzoffset, from: today())
+
+data =
+    from(bucket: "BUCKET_NAME")
+        |> range(start: start, stop: stop)
+        |> filter(
+            fn: (r) =>
+                r._measurement == "environment" and r.asset == "ASSET_NAME" and r.location == "indoor",
+        )
+        |> filter(fn: (r) => r._field == "humidity")
+
+data
+    |> aggregateWindow(every: 24h, fn: max, createEmpty: false, location: tz)
+    |> set(key: "_field", value: "max_value")
+    |> timeShift(duration: -1d)
+    |> yield(name: "max")
+    |> to(bucket: "downsample-humidity", tagColumns: ["asset", "location"], org: "YOUR-ORG")
+
+data
+    |> aggregateWindow(every: 24h, fn: min, createEmpty: false, location: tz)
+    |> set(key: "_field", value: "min_value")
+    |> timeShift(duration: -1d)
+    |> yield(name: "min")
+    |> to(bucket: "downsample-humidity", tagColumns: ["asset", "location"], org: "YOUR-ORG")
+
+data
+    |> aggregateWindow(every: 24h, fn: mean, createEmpty: false, location: tz)
+    |> set(key: "_field", value: "mean_value")
+    |> timeShift(duration: -1d)
+    |> yield(name: "mean")
+    |> to(bucket: "downsample-humidity", tagColumns: ["asset", "location"], org: "YOUR-ORG")
+```
+
+Unfortunately this "workaround" doesn't always work and `InfluxDB` will keep running the `cron` task twice, once at UTC midnight and a second time at `midnight UTC + local_timezone`. This is far from ideal but this issue seems to be around since 2020 and it's not being addressed. To consolidate data there's a script: `utils/fix_influx_data.py` that takes care of removing the redundant datapoints from all buckets at `midnight UTC + local_timezone`. This script should be run as cron job:
+
+- Edit `utils/fix_influx_data.py` to add your low-frequency buckets and your token
+- `crontab -e`
+- Add `15 05 * * * /path/to/monitor-lizard/utils/fix_influx_data.py 1` (runs every day at 5:15 AM and it cleans up the previous day)
+
+If you need to clean-up more data point just run the script with `python3 utils/fix_influx_data.py <number of days to clean up>`.
