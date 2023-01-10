@@ -5,8 +5,11 @@ def get_outdoor_data(lat, lon, api_key):
     r = requests.get(f'https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key}')
 
     if r.status_code != 200:
-        logging.error('Error requesting data from openweathermap: %s', r.status_code)
-        return {}
+        logging.error(f'Error requesting data from openweathermap: {r.status_code}')
+
+        return {
+            "error": r.status_code
+        }
 
     data = r.json()
 
@@ -20,9 +23,15 @@ def start(q, cfg):
         # Get outdoor data from the API
         r = get_outdoor_data(cfg['lat'], cfg['lon'], cfg['ow-key'])
         
-        if len(r) == 0:
-            print('Cannot read data from weather API')
-            return 1
+        if 'error' in r:
+            # Give up on client errors
+            if r['error'] >= 400 and r['error'] <= 499:
+                logging.error('Client error: giving up')
+                return 1
+
+            # Keep trying otherwise
+            sleep(cfg['poll-time'])
+            continue
 
         p = {
             "measurement": cfg['measurement'],
