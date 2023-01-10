@@ -267,6 +267,6 @@ Unfortunately this "workaround" doesn't always work and `InfluxDB` will keep run
 
 - Edit `utils/fix_influx_data.py` to add your low-frequency buckets and your token
 - `crontab -e`
-- Add `15 05 * * * /path/to/monitor-lizard/utils/fix_influx_data.py 1` (runs every day at 5:15 AM and it cleans up the previous day)
+- Add `15 05 * * * python3 /path/to/monitor-lizard/utils/fix_influx_data.py 1` (runs every day at 5:15 AM and it cleans up the previous day)
 
 If you need to clean-up more data point just run the script with `python3 utils/fix_influx_data.py <number of days to clean up>`.
